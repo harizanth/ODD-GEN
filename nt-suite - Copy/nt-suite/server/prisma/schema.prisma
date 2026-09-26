@@ -1,0 +1,534 @@
+// ============================================================
+// Odoo Enterprise Architecture — Unified Schema
+// res.partner (Partner) is the central hub for all modules.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------- Auth / Users ----------------
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("admin") // admin | manager | user
+  avatar       String?
+  color        String   @default("#714B67")
+  createdAt    DateTime @default(now())
+
+  leads            Lead[]
+  tasksAssigned    Task[]              @relation("TaskAssignee")
+  timesheets       Timesheet[]
+  tickets          HelpdeskTicket[]    @relation("TicketAssignee")
+  notifications    Notification[]
+  articles         KnowledgeArticle[]
+  documents        Document[]
+  employee         Employee?
+  messages         ChatMessage[]
+  posSessions      PosSession[]
+  fieldOrders      FieldServiceOrder[] @relation("TechnicianAssigned")
+  signaturesIssued SignatureRequest[]  @relation("SignatureRequester")
+  activities       RecordActivity[]
+}
+
+// ---------------- Contacts (res.partner hub) ----------------
+
+model Partner {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  type      String   @default("customer") // customer | vendor | both | other
+  avatar    String?
+  address   String?
+  city      String?
+  country   String?  @default("United States")
+  tags      String?  // comma separated
+  notes     String?
+  createdAt DateTime @default(now())
+
+  leads             Lead[]
+  salesOrders       SalesOrder[]
+  purchaseOrders    PurchaseOrder[]
+  invoices          Invoice[]
+  tickets           HelpdeskTicket[]
+  projects          Project[]
+  events            CalendarEvent[]
+  posOrders         PosOrder[]
+  subscriptions     Subscription[]
+  signatureRequests SignatureRequest[]
+  fieldOrders       FieldServiceOrder[]
+}
+
+// ---------------- CRM ----------------
+
+model Lead {
+  id           Int       @id @default(autoincrement())
+  name         String
+  partnerId    Int?
+  partner      Partner?  @relation(fields: [partnerId], references: [id])
+  company      String?
+  value        Float     @default(0)
+  stage        String    @default("new") // new | qualified | proposal | won | lost
+  probability  Int       @default(30)
+  source       String?   @default("Website")
+  ownerId      Int?
+  owner        User?     @relation(fields: [ownerId], references: [id])
+  expectedDate DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+}
+
+// ---------------- Sales ----------------
+
+model SalesOrder {
+  id          Int              @id @default(autoincrement())
+  number      String           @unique
+  partnerId   Int
+  partner     Partner          @relation(fields: [partnerId], references: [id])
+  status      String           @default("draft") // draft | confirmed | shipped | invoiced | cancelled
+  orderDate   DateTime         @default(now())
+  amountTotal Float            @default(0)
+  lines       SalesOrderLine[]
+  invoices    Invoice[]
+}
+
+model SalesOrderLine {
+  id        Int        @id @default(autoincrement())
+  orderId   Int
+  order     SalesOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int?
+  product   Product?   @relation(fields: [productId], references: [id])
+  desc      String
+  qty       Float      @default(1)
+  unitPrice Float      @default(0)
+  discount  Float      @default(0)
+}
+
+// ---------------- Purchase ----------------
+
+model PurchaseOrder {
+  id          Int                 @id @default(autoincrement())
+  number      String              @unique
+  partnerId   Int
+  partner     Partner             @relation(fields: [partnerId], references: [id])
+  status      String              @default("draft") // draft | sent | confirmed | received | cancelled
+  orderDate   DateTime            @default(now())
+  amountTotal Float               @default(0)
+  lines       PurchaseOrderLine[]
+}
+
+model PurchaseOrderLine {
+  id        Int           @id @default(autoincrement())
+  orderId   Int
+  order     PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int?
+  product   Product?      @relation(fields: [productId], references: [id])
+  desc      String
+  qty       Float         @default(1)
+  unitCost  Float         @default(0)
+}
+
+// ---------------- Invoicing / Accounting ----------------
+
+model Invoice {
+  id           Int         @id @default(autoincrement())
+  number       String      @unique
+  type         String      @default("out_invoice") // out_invoice (customer) | in_invoice (vendor bill)
+  partnerId    Int
+  partner      Partner     @relation(fields: [partnerId], references: [id])
+  salesOrderId Int?
+  salesOrder   SalesOrder? @relation(fields: [salesOrderId], references: [id])
+  amount       Float       @default(0)
+  status       String      @default("draft") // draft | unpaid | paid | overdue
+  issueDate    DateTime    @default(now())
+  dueDate      DateTime
+  payments     Payment[]
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  invoiceId Int
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount    Float
+  method    String   @default("bank") // bank | card | cash
+  date      DateTime @default(now())
+}
+
+// ---------------- Inventory ----------------
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  sku         String  @unique
+  name        String
+  category    String  @default("General")
+  price       Float   @default(0)
+  cost        Float   @default(0)
+  stock       Int     @default(0)
+  reorder     Int     @default(10)
+  uom         String  @default("Units")
+  image       String?
+  type        String  @default("storable") // storable | consumable | service
+  description String?
+
+  salesLines         SalesOrderLine[]
+  purchaseLines      PurchaseOrderLine[]
+  moves              StockMove[]
+  bomsProduced       BillOfMaterial[]    @relation("BOMFinishedProduct")
+  bomComponents      BOMComponent[]
+  posLines           PosOrderLine[]
+  subscriptionPlans  SubscriptionPlan[]
+}
+
+model StockMove {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  qty       Int
+  type      String   // in | out | adjustment
+  reference String?
+  date      DateTime @default(now())
+}
+
+// ---------------- Manufacturing (MRP) ----------------
+
+model BillOfMaterial {
+  id             Int             @id @default(autoincrement())
+  code           String          @unique
+  productId      Int
+  product        Product         @relation("BOMFinishedProduct", fields: [productId], references: [id])
+  qty            Float           @default(1)
+  routing        String?         @default("Standard Assembly Line")
+  components     BOMComponent[]
+  ordersProduced ManufacturingOrder[]
+}
+
+model BOMComponent {
+  id          Int            @id @default(autoincrement())
+  bomId       Int
+  bom         BillOfMaterial @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  productId   Int
+  product     Product        @relation(fields: [productId], references: [id])
+  qtyRequired Float          @default(1)
+}
+
+model ManufacturingOrder {
+  id          Int            @id @default(autoincrement())
+  number      String         @unique
+  bomId       Int
+  bom         BillOfMaterial @relation(fields: [bomId], references: [id])
+  qty         Float          @default(1)
+  status      String         @default("draft") // draft | confirmed | in_progress | done | cancelled
+  scheduledAt DateTime       @default(now())
+  completedAt DateTime?
+}
+
+// ---------------- Point of Sale (POS) ----------------
+
+model PosSession {
+  id        Int        @id @default(autoincrement())
+  name      String
+  openedBy  Int
+  user      User       @relation(fields: [openedBy], references: [id])
+  status    String     @default("opened") // opened | closed
+  openedAt  DateTime   @default(now())
+  closedAt  DateTime?
+  orders    PosOrder[]
+}
+
+model PosOrder {
+  id          Int            @id @default(autoincrement())
+  number      String         @unique
+  sessionId   Int
+  session     PosSession     @relation(fields: [sessionId], references: [id])
+  partnerId   Int?
+  partner     Partner?       @relation(fields: [partnerId], references: [id])
+  amountTotal Float          @default(0)
+  paymentMode String         @default("cash") // cash | card | split
+  createdAt   DateTime       @default(now())
+  lines       PosOrderLine[]
+}
+
+model PosOrderLine {
+  id        Int      @id @default(autoincrement())
+  orderId   Int
+  order     PosOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id])
+  qty       Float    @default(1)
+  unitPrice Float    @default(0)
+}
+
+// ---------------- Subscriptions ----------------
+
+model SubscriptionPlan {
+  id            Int            @id @default(autoincrement())
+  name          String
+  code          String         @unique
+  billingPeriod String         @default("monthly") // monthly | yearly
+  price         Float          @default(0)
+  productId     Int?
+  product       Product?       @relation(fields: [productId], references: [id])
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id        Int              @id @default(autoincrement())
+  code      String           @unique
+  partnerId Int
+  partner   Partner          @relation(fields: [partnerId], references: [id])
+  planId    Int
+  plan      SubscriptionPlan @relation(fields: [planId], references: [id])
+  mrr       Float            @default(0)
+  status    String           @default("active") // active | paused | cancelled
+  startDate DateTime         @default(now())
+  nextBill  DateTime
+}
+
+// ---------------- Discuss / Chat ----------------
+
+model ChatChannel {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  type        String        @default("public") // public | private | direct
+  description String?
+  messages    ChatMessage[]
+  createdAt   DateTime      @default(now())
+}
+
+model ChatMessage {
+  id        Int         @id @default(autoincrement())
+  channelId Int
+  channel   ChatChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User        @relation(fields: [userId], references: [id])
+  content   String
+  createdAt DateTime    @default(now())
+}
+
+// ---------------- Sign (e-Signature) ----------------
+
+model SignatureRequest {
+  id          Int       @id @default(autoincrement())
+  title       String
+  partnerId   Int
+  partner     Partner   @relation(fields: [partnerId], references: [id])
+  requesterId Int
+  requester   User      @relation("SignatureRequester", fields: [requesterId], references: [id])
+  status      String    @default("pending") // pending | signed | rejected
+  signature   String?   // Base64 signature image or svg
+  signedAt    DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+// ---------------- Field Service & Planning ----------------
+
+model FieldServiceOrder {
+  id           Int       @id @default(autoincrement())
+  number       String    @unique
+  title        String
+  partnerId    Int
+  partner      Partner   @relation(fields: [partnerId], references: [id])
+  technicianId Int?
+  technician   User?     @relation("TechnicianAssigned", fields: [technicianId], references: [id])
+  priority     String    @default("normal") // low | normal | high | urgent
+  status       String    @default("new") // new | scheduled | in_progress | completed
+  location     String?
+  scheduledFor DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+}
+
+model PlanningShift {
+  id        Int      @id @default(autoincrement())
+  title     String
+  role      String   @default("Technician")
+  userEmail String?
+  startTime DateTime
+  endTime   DateTime
+  allocated Float    @default(8.0) // hours
+  status    String   @default("published") // draft | published
+}
+
+// ---------------- Email Marketing ----------------
+
+model EmailCampaign {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subject   String
+  target    String   @default("Customers") // Customers | Vendors | Leads
+  status    String   @default("draft") // draft | queued | sent
+  sentCount Int      @default(0)
+  opened    Int      @default(0)
+  clicked   Int      @default(0)
+  sentAt    DateTime?
+  body      String?
+  createdAt DateTime @default(now())
+}
+
+// ---------------- Projects & Timesheets ----------------
+
+model Project {
+  id        Int       @id @default(autoincrement())
+  name      String
+  partnerId Int?
+  partner   Partner?  @relation(fields: [partnerId], references: [id])
+  status    String    @default("active") // active | on_hold | done
+  deadline  DateTime?
+  tasks     Task[]
+}
+
+model Task {
+  id         Int         @id @default(autoincrement())
+  projectId  Int
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title      String
+  status     String      @default("todo") // todo | inprogress | done
+  priority   String      @default("normal") // low | normal | high
+  assigneeId Int?
+  assignee   User?       @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  dueDate    DateTime?
+  timesheets Timesheet[]
+}
+
+model Timesheet {
+  id     Int      @id @default(autoincrement())
+  taskId Int?
+  task   Task?    @relation(fields: [taskId], references: [id])
+  userId Int
+  user   User     @relation(fields: [userId], references: [id])
+  hours  Float
+  date   DateTime @default(now())
+  note   String?
+}
+
+// ---------------- HR ----------------
+
+model Department {
+  id        Int        @id @default(autoincrement())
+  name      String
+  employees Employee[]
+}
+
+model Employee {
+  id           Int            @id @default(autoincrement())
+  userId       Int?           @unique
+  user         User?          @relation(fields: [userId], references: [id])
+  name         String
+  role         String
+  departmentId Int?
+  department   Department?    @relation(fields: [departmentId], references: [id])
+  email        String?
+  status       String         @default("active") // active | leave | terminated
+  hireDate     DateTime       @default(now())
+  leaves       LeaveRequest[]
+}
+
+model LeaveRequest {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  type       String   @default("annual") // annual | sick | unpaid
+  startDate  DateTime
+  endDate    DateTime
+  status     String   @default("pending") // pending | approved | rejected
+}
+
+// ---------------- Helpdesk ----------------
+
+model HelpdeskTicket {
+  id          Int      @id @default(autoincrement())
+  subject     String
+  partnerId   Int?
+  partner     Partner? @relation(fields: [partnerId], references: [id])
+  status      String   @default("open") // open | pending | resolved | closed
+  priority    String   @default("normal") // low | normal | high | urgent
+  assigneeId  Int?
+  assignee    User?    @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+// ---------------- Calendar ----------------
+
+model CalendarEvent {
+  id        Int      @id @default(autoincrement())
+  title     String
+  start     DateTime
+  end       DateTime
+  allDay    Boolean  @default(false)
+  partnerId Int?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+  notes     String?
+}
+
+// ---------------- Knowledge ----------------
+
+model KnowledgeArticle {
+  id        Int      @id @default(autoincrement())
+  title     String
+  category  String   @default("General")
+  content   String   @default("")
+  authorId  Int?
+  author    User?    @relation(fields: [authorId], references: [id])
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+// ---------------- Documents ----------------
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  filename   String
+  path       String
+  size       Int      @default(0)
+  tag        String   @default("General") // Financial | Invoices | Contracts | HR | Product
+  uploadedBy Int?
+  uploader   User?    @relation(fields: [uploadedBy], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ---------------- Studio Custom Fields ----------------
+
+model StudioCustomField {
+  id         Int      @id @default(autoincrement())
+  modelName  String
+  fieldName  String
+  fieldType  String   @default("char") // char | integer | float | boolean | selection
+  label      String
+  required   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+// ---------------- Chatter / Activities ----------------
+
+model RecordActivity {
+  id         Int      @id @default(autoincrement())
+  resModel   String   // Lead | SalesOrder | Invoice | Project | Task etc.
+  resId      Int
+  type       String   @default("note") // note | email | meeting | call | todo
+  summary    String
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ---------------- Notifications ----------------
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  text      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,884 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   NT SUITE — ENTERPRISE DESIGN SYSTEM
+   Professional, clean, Odoo-inspired interface tokens
+   ============================================================ */
+:root {
+  --odoo-primary: #714B67;
+  --odoo-primary-dark: #58374F;
+  --odoo-teal: #017E84;
+  --odoo-teal-light: #00A09D;
+
+  --bg: #F8F9FA;
+  --surface: #FFFFFF;
+  --surface-2: #FAFBFD;
+  --surface-hover: #F0F3F7;
+  --border: #E5E7EB;
+  --border-light: #F0F0F2;
+
+  --ink: #1E293B;
+  --ink-secondary: #475569;
+  --ink-muted: #64748B;
+  --ink-faint: #94A3B8;
+
+  /* Accent palette for icon containers */
+  --accent-purple: #714B67;
+  --accent-purple-bg: #F5EEF3;
+  --accent-teal: #017E84;
+  --accent-teal-bg: #E6F5F5;
+  --accent-blue: #2563EB;
+  --accent-blue-bg: #EFF6FF;
+  --accent-orange: #EA580C;
+  --accent-orange-bg: #FFF7ED;
+  --accent-green: #059669;
+  --accent-green-bg: #ECFDF5;
+  --accent-indigo: #4F46E5;
+  --accent-indigo-bg: #EEF2FF;
+  --accent-rose: #E11D48;
+  --accent-rose-bg: #FFF1F2;
+  --accent-amber: #D97706;
+  --accent-amber-bg: #FFFBEB;
+  --accent-violet: #7C3AED;
+  --accent-violet-bg: #F5F3FF;
+  --accent-cyan: #0891B2;
+  --accent-cyan-bg: #ECFEFF;
+  --accent-slate: #475569;
+  --accent-slate-bg: #F1F5F9;
+  --accent-sky: #0284C7;
+  --accent-sky-bg: #F0F9FF;
+
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+
+  --topbar-h: 52px;
+  --font-script: 'Caveat', 'Patrick Hand', cursive;
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  --shadow-card-hover: 0 8px 24px -4px rgba(0,0,0,0.08);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.07);
+}
+
+html[data-theme='dark'] {
+  --bg: #0F172A;
+  --surface: #1E293B;
+  --surface-2: #162032;
+  --surface-hover: #26354D;
+  --border: #334155;
+  --border-light: #263345;
+
+  --ink: #F8FAFC;
+  --ink-secondary: #CBD5E1;
+  --ink-muted: #94A3B8;
+  --ink-faint: #64748B;
+
+  --accent-purple-bg: #3D2837;
+  --accent-teal-bg: #0C3536;
+  --accent-blue-bg: #1A2744;
+  --accent-orange-bg: #3B2212;
+  --accent-green-bg: #0D3326;
+  --accent-indigo-bg: #1E1A42;
+  --accent-rose-bg: #3A1225;
+  --accent-amber-bg: #332510;
+  --accent-violet-bg: #2A1548;
+  --accent-cyan-bg: #0D3240;
+  --accent-slate-bg: #283040;
+  --accent-sky-bg: #0D2A40;
+
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-card-hover: 0 8px 24px -4px rgba(0,0,0,0.3);
+  --shadow-elevated: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-script {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ============================================================
+   CATEGORY SECTION HEADERS
+   ============================================================ */
+.apps-category-section {
+  margin-bottom: 2rem;
+}
+
+.apps-category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.apps-category-header .category-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.apps-category-header .category-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.apps-category-header .category-subtitle {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 400;
+  margin-top: 1px;
+}
+
+.apps-category-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--border-light);
+  margin-left: 8px;
+}
+
+/* ============================================================
+   APP CARDS — PROFESSIONAL ENTERPRISE STYLE
+   ============================================================ */
+.app-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+
+.app-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: #CBD5E1;
+}
+
+html[data-theme='dark'] .app-card:hover {
+  border-color: #475569;
+}
+
+.app-card.app-card--core {
+  border-color: rgba(1, 126, 132, 0.35);
+  box-shadow: var(--shadow-card), 0 0 0 1px rgba(1, 126, 132, 0.08);
+}
+
+.app-card .app-icon-container {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.app-card:hover .app-icon-container {
+  transform: scale(1.08);
+}
+
+.app-card .app-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  transition: color 0.15s ease;
+}
+
+.app-card:hover .app-title {
+  color: var(--odoo-primary);
+}
+
+html[data-theme='dark'] .app-card:hover .app-title {
+  color: #C084FC;
+}
+
+.app-card .app-subtitle {
+  font-size: 12px;
+  color: var(--ink-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.app-card .app-desc {
+  font-size: 11px;
+  color: var(--ink-faint);
+  line-height: 1.5;
+  margin-top: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.app-card .app-launch {
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+  width: 100%;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-secondary);
+  transition: color 0.15s ease;
+}
+
+.app-card:hover .app-launch {
+  color: var(--odoo-primary);
+}
+
+html[data-theme='dark'] .app-card:hover .app-launch {
+  color: #C084FC;
+}
+
+.app-card .app-launch .launch-arrow {
+  transition: transform 0.2s ease;
+}
+
+.app-card:hover .app-launch .launch-arrow {
+  transform: translateX(3px);
+}
+
+/* Core badge */
+.app-core-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   ENTERPRISE SETUP CARDS (ONBOARDING)
+   ============================================================ */
+.onboarding-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+.onboarding-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--bg);
+  border: 1px solid transparent;
+}
+
+.onboarding-step:hover {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow-card);
+  transform: translateY(-1px);
+}
+
+.onboarding-step .step-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.onboarding-step:hover .step-icon {
+  transform: scale(1.05);
+}
+
+.onboarding-step .step-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.onboarding-step .step-subtitle {
+  font-size: 11px;
+  color: var(--ink-muted);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.onboarding-step .step-number {
+  font-size: 10px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  color: var(--ink-faint);
+  letter-spacing: 0.05em;
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.apps-hero {
+  text-align: center;
+  padding: 8px 0 0;
+}
+
+.apps-hero-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.apps-hero-subtitle {
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-top: 6px;
+  font-weight: 400;
+}
+
+.apps-hero-search {
+  max-width: 420px;
+  margin: 16px auto 0;
+  position: relative;
+}
+
+.apps-hero-search input {
+  width: 100%;
+  padding: 10px 16px 10px 42px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--ink);
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.apps-hero-search input:focus {
+  border-color: var(--odoo-primary);
+  box-shadow: 0 0 0 3px rgba(113, 75, 103, 0.1), var(--shadow-card);
+}
+
+.apps-hero-search .search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+/* ============================================================
+   BUSINESS PROFILE BANNER
+   ============================================================ */
+.business-banner {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+}
+
+.business-banner .banner-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.business-kpi-card {
+  padding: 12px 14px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+
+.business-kpi-label {
+  font-size: 10px;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.business-kpi-value {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.business-kpi-change {
+  font-size: 10px;
+  font-weight: 600;
+  color: #059669;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   TOP NAVIGATION
+   ============================================================ */
+.o-topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px -1px rgba(0,0,0,0.04);
+}
+
+.o-menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: #F1F5F9;
+  color: #1E293B;
+  transition: all 0.15s;
+}
+
+html[data-theme='dark'] .o-menu-btn {
+  background: #334155;
+  color: #F8FAFC;
+}
+
+.o-menu-btn:hover {
+  background: #E2E8F0;
+  transform: scale(1.04);
+}
+
+.o-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.o-search-box {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  min-width: 220px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.o-search-box:hover {
+  background: var(--surface);
+  border-color: var(--ink-faint);
+}
+
+.o-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--odoo-primary);
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(113, 75, 103, 0.35);
+}
+
+.o-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink-muted);
+  transition: all 0.15s;
+  position: relative;
+}
+
+.o-icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+.o-notif-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #E11D48;
+  border: 1.5px solid var(--surface);
+}
+
+/* ============================================================
+   CARDS & BUTTONS
+   ============================================================ */
+.o-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.o-card:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.o-btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  transition: all 0.15s ease;
+}
+
+.o-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(0,0,0,0.08);
+}
+
+.o-btn-primary {
+  background: #714B67;
+  color: #fff;
+  border-color: #714B67;
+}
+.o-btn-primary:hover {
+  background: #5A3C52;
+}
+
+.o-btn-pink {
+  background: #E11D48;
+  color: #fff;
+  border-color: #E11D48;
+}
+.o-btn-pink:hover {
+  background: #BE123C;
+}
+
+.o-btn-teal {
+  background: #017E84;
+  color: #fff;
+  border-color: #017E84;
+}
+.o-btn-teal:hover {
+  background: #066C71;
+}
+
+/* ============================================================
+   MODAL SYSTEM
+   ============================================================ */
+.o-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.o-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px -12px rgba(0,0,0,0.25);
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.o-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.o-modal-body {
+  padding: 20px;
+}
+
+.o-modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+.o-field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  margin-bottom: 5px;
+}
+
+.o-field input,
+.o-field select,
+.o-field textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.o-field input:focus,
+.o-field select:focus,
+.o-field textarea:focus {
+  border-color: var(--odoo-primary);
+  box-shadow: 0 0 0 2px rgba(113, 75, 103, 0.1);
+}
+
+/* ============================================================
+   TABLES & BADGES
+   ============================================================ */
+.o-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+table.o-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+table.o-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-muted);
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+table.o-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--ink);
+}
+
+.o-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.o-badge-pink { background: var(--accent-rose-bg); color: #E11D48; }
+.o-badge-yellow { background: var(--accent-amber-bg); color: #B45309; }
+.o-badge-blue { background: var(--accent-blue-bg); color: #0284C7; }
+.o-badge-teal { background: var(--accent-teal-bg); color: #059669; }
+.o-badge-purple { background: var(--accent-violet-bg); color: #7C3AED; }
+
+/* ============================================================
+   BUSINESS ICON CONTAINER (for switcher)
+   ============================================================ */
+.business-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.business-icon-box-sm {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   UTILITY & ANIMATION
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ============================================================
+   ODOO APP LAUNCHER SQUIRCLE TILES & DOODLE ONBOARDING
+   (Exact visual match to user reference screenshots)
+   ============================================================ */
+.font-handwriting {
+  font-family: 'Caveat', 'Kalam', cursive;
+}
+
+.odoo-launcher-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.odoo-launcher-card:hover {
+  transform: translateY(-5px) scale(1.025);
+  box-shadow: 0 16px 32px -4px rgba(113, 75, 103, 0.14), 0 6px 12px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(113, 75, 103, 0.3);
+}
+
+[data-theme="dark"] .odoo-launcher-card {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .odoo-launcher-card:hover {
+  box-shadow: 0 16px 32px -4px rgba(0, 0, 0, 0.6);
+  border-color: #C084FC;
+}
+
+.doodle-step-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px;
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+}
+
+.doodle-step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  border-color: var(--odoo-primary);
+}
+
+[data-theme="dark"] .doodle-step-card {
+  background: #1E293B;
+  border-color: #334155;
+}

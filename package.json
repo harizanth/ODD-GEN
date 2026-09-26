@@ -1,0 +1,13 @@
+{
+  "name": "odd-gen-suite",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm run dev --prefix \"nt-suite - Copy/nt-suite\"",
+    "start": "npm start --prefix \"nt-suite - Copy/nt-suite\"",
+    "build": "npm run build --prefix \"nt-suite - Copy/nt-suite\"",
+    "seed": "npm run seed --prefix \"nt-suite - Copy/nt-suite\"",
+    "db:push": "npm run db:push --prefix \"nt-suite - Copy/nt-suite\"",
+    "test:spatial": "node \"nt-suite - Copy/nt-suite/server/src/routes/spatial.js\""
+  }
+}
